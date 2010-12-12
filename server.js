@@ -1,5 +1,5 @@
 var http = require('http'),  
-    io = require('/usr/local/lib/node/socket.io'), // for npm, otherwise use require('./path/to/socket.io') 
+    io = require('socket.io'), // for npm, otherwise use require('./path/to/socket.io') 
     fs = require('fs'),
     url = require('url'),
     q = require('querystring')
