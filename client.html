@@ -1,0 +1,33 @@
+<link rel=stylesheet type=text/css href="http://80.217.154.69:8124/style">
+<script src="http://80.217.154.69:8124/socket"></script>
+<script> 
+    var socket = new io.Socket('80.217.154.69'); 
+    socket.connect();
+
+    socket.on(
+        'message',
+        function(data) {
+            document.getElementById('output').innerHTML += "<span>" + data + "</span><br />";
+        }
+    ) 
+    
+    function sendData() {
+        var element = document.getElementById('field');
+        var input = element.value.trim();
+        if (input) {
+            socket.send(input);
+            element.value = '';
+        }
+    }
+</script> 
+<html>
+    <title>socket.io test</title>
+    <body>
+        <div id=page>
+            <div id=output></div>
+            <div id=input>
+                <input id=field type=text onkeydown="if (event.keyCode == 13) sendData()">
+            </div>
+        </div>
+    </body>
+</html>
