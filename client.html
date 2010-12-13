@@ -15,7 +15,12 @@
         var element = document.getElementById('field');
         var input = element.value.trim();
         if (input) {
-            socket.send(input);
+            if (input == "/quit") {
+                socket.disconnect();
+                document.getElementById('output').innerHTML += "<span>" + "--> you have disconnected" + "</span><br />";
+            } else {
+                socket.send(input);
+            }
             element.value = '';
         }
     }
