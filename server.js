@@ -102,7 +102,9 @@ socket.on(
                         client.send(connected_users[i].username + "\n");
                     }
                 } else {
-                    socket.broadcast(user.username + " says: " + data + "\n");
+                    var d = new Date();
+                    time = d.getHours() + ":" + d.getMinutes();
+                    socket.broadcast(time + " " + user.username + " says: " + data + "\n");
                 }
             }
         ) 
