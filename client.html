@@ -1,38 +1,147 @@
-<link rel=stylesheet type=text/css href="http://localhost:8124/style">
-<script src="http://localhost:8124/socket"></script>
-<script> 
-    var socket = new io.Socket('localhost'); 
-    socket.connect();
+<html>
+<head>
+<title></title>
+<link rel=stylesheet type=text/css href="http://hklgd4j:8124/style">
+<script src="http://hklgd4j:8124/socket"></script>
+<script src="http://hklgd4j:8124/jquery.js"></script>
+<script>
+    var username;
+    var nameupdate; //Tmp Holder
+    var channels = []; 
 
+    var socket = new io.Socket('hklgd4j'); 
+    socket.connect();
     socket.on(
         'message',
         function(data) {
-            document.getElementById('output').innerHTML += "<span>" + data + "</span><br />";
-        }
-    ) 
+	    var data = eval('('+data+')');	            
+	    if(!data) return; //Junkdata
+
+	    var action = data.action;
+	    if(!action) return;
+
+	    if(action == "set_nick") {
+		if(!data.success) {
+			displayError("Nicket upptaget, vänligen välj ett annat");
+			return;
+		}
+		username = nameupdate;
+		return;
+	    }
+
+	    if(action == "channelupdate") {
+		if(data.event == "add") {
+			channels.push(data.channel);
+		}
+		else if(data.event == "remove") {
+			channels.splice(channels.indexOf(data.channel),1);
+		}
+		updateChannels();
+		return;
+	    }
+
+
+/*            var timestamp;
+	    if(info.ts) {
+		 d = new Date(info.ts);	
+		 timestamp = fixTime(d.getHours())+":"+fixTime(d.getMinutes())+":"+fixTime(d.getSeconds());
+	     }
+	     else {
+		timestamp = new Date();
+		timestamp = fixTime(timestamp.getHours)+":"+fixTime(timestamp.getMinutes())+":"+fixTime(timestamp.getSeconds());
+	     }
+	   
+	    if(info.type == "sys") {
+		 document.getElementById('output').innerHTML += "<span class=\"timestamp\">"+timestamp+"</span><span class=\"system_msg\"> ---> " + info.message + "</span><br />";
+	    }
+	    else if(info.type == "usr") {
+		 document.getElementById('output').innerHTML += "<span class=\"timestamp\">"+timestamp+"</span><span class=\"username\">"+ info.user +"</span><span class=\"user_message\">"+ info.message +"</span><br />";
+	    }
+        }*/
+    )
     
+    function fixTime(time) {
+	if(time < 10) return "0"+time; return time;
+    }
+
     function sendData() {
         var element = document.getElementById('field');
         var input = element.value.trim();
         if (input) {
             if (input == "/quit") {
                 socket.disconnect();
-                document.getElementById('output').innerHTML += "<span>" + "--> you have disconnected" + "</span><br />";
-            } else {
+                document.getElementById('output').innerHTML += "<span class=\"client_info\">" + "---> you have disconnected" + "</span><br />";
+            } 
+	    else if (input == "/clear"){
+		document.getElementById('output').innerHTML = "";
+	    }
+	    else {
                 socket.send(input);
             }
             element.value = '';
         }
     }
+
+	function updateChannels() {
+		$("#channellist").hide().html("");
+		if(channels.length == 0) return;
+		var chanList = "<ul>"
+		for(var i=0;i<channels.length;i++) {
+			
+		}
+		
+		
+	}
+	
+	function joinChannel(channel) {
+		if(!channel) return;
+		var cmd = JSON.stringify({"action":"join","channel":channel});
+		socket.send(cmd);
+	}
+
+	function login() {
+		var nick = $('#login_username').val();
+		if(!(nick.trim())) {
+			displayError("Skriv in ett nick!");
+		}
+		var cmd = JSON.stringify({"action":"join_server","nick":nick});	
+		socket.send(cmd);
+		nameupdate = nick;
+	}
+
+	function displayError(error) {
+		if(!error) return;
+		$('#errorframe').hide().text(error).show();
+	}
+
 </script> 
-<html>
-    <title>socket.io test</title>
+    </head>
+
+
     <body>
-        <div id=page>
-            <div id=output></div>
-            <div id=input>
-                <input id=field type=text onkeydown="if (event.keyCode == 13) sendData()">
-            </div>
-        </div>
+	<div id="container">
+			<div id="errorframe"></div>
+			<div id="nickselection">
+				<label for="login_username" id="login_text">Nick:</label>
+				<input type="text" value="" id="login_username" />
+				<input type="buttom" value="Login" onclick="login();" />
+			</div>
+			<div id="channelselection">
+				<div id="channellist" style="display:none;">
+				</div>
+				<div id="channelcreate">
+		                        <label for="create_chan" id="create_chan_text">Create channel:</label>
+	        	                <input type="text" value="" id="create_channel" />
+	                                <input type="buttom" value="Ok" onclick="joinChannel($('#create_channel'));" />	
+				</div>
+
+			</div>
+	        <div id="page">
+        	    <div id="output"></div>
+	            <div id="input">
+        	        <input id="field" type="text" onkeydown="if (event.keyCode == 13) sendData();">
+	            </div>
+	        </div>
+	</div>
     </body>
 </html>

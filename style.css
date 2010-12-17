@@ -1,20 +1,37 @@
 #page {
-	height: 99%;
-	position: relative;
+	height: 95%;
 }
 
 #output {
 	width: 100%;
-	position: absolute;
-	bottom: 25px;
+	height: 100%;
+	overflow: auto;
 }
 
 #input {
 	width: 100%;
-	position: absolute;
-	bottom: 1px;
 }
 
 #field {
     width: 100%;
+}
+
+.timestamp {
+
+}
+
+.system_msg {
+
+}
+
+.user_message {
+
+}
+
+.username {
+
+}
+
+.myname {
+
 }
