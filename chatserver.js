@@ -1,9 +1,6 @@
 var io = require('/usr/local/lib/node/socket.io'),
 	http = require('http'),
-    json = require('./json_events')
-
-console.log(json);
-var test = json.Nick("newnick", "oldnick");
+    json_events = require('./json_events')
 
 var users = [];
 var channels = [];
@@ -42,7 +39,7 @@ function sendUserMessage(user, message) {
 }
 
 function sendGlobalMessage(message) {
-    for (var i = 0; i < users; i++) {
+    for (var i = 0; i < users.length; i++) {
         users[i].client.send(message);
     }
 }
@@ -80,42 +77,42 @@ socket.on(
                     case 'join':
                         var channel = clientrequest.channel;
                         if (!channelExists(channel)) {
-                            channels.push(json.Channel(channel));
+                            channels.push(json_events.Channel(channel));
                             user.channels.push(channel);
-                            sendGlobalMessage(json.Channel("created", channel));
+                            sendGlobalMessage(json_events.Channel("created", channel));
                         }
-                        sendChannelMessage(channel, json.JoinPart(user.nick, "join", channel));
+                        sendChannelMessage(channel, json_events.JoinPart(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
                     case 'list':
                         for (var i = 0; i < channels.length; i++) {
-                            client.send(json.Channel("", channels[i].name));
+                            client.send(json_events.Channel("", channels[i].name));
                         }
                         break;
                     case 'msg':
                         var channel = clientrequest.channel;
                         var content = clientrequest.content;
-                        sendChannelMessage(channel, json.Message(content, channel, user.nick));
+                        sendChannelMessage(channel, json_events.Message(content, channel, user.nick));
                         break;
                     case 'names':
                         var channel = clientrequest.channel;
                         var channelUsers = channels[channels.indexOf(channel)].users;
                         for (var i = 0; i < channelUsers.length; i++) {
-                           client.send(json.Nick(channelUsers.nick, "")); 
+                           client.send(json_events.Nick(channelUsers.nick, "")); 
                         }
                         break;
                     case 'nick':
                         var requestedNick = clientrequest.requestedNick;
                         if (!nickExists(requestedNick)) {
                             user.nick = requestedNick; 
-                            sendUserMessage(json.Nick(requestedNick, user.nick));
+                            sendUserMessage(json_events.Nick(requestedNick, user.nick));
                         }
                         break;
                     case 'part':
                         var channelname = clientrequest.channel;
                         if (channelExists(channelname)) {
                             user.channels.splice(user.channels.indexOf(channelname), 1);
-                            sendUserMessage(json.Notification(user.nick, "part", channelname));
+                            sendUserMessage(json_events.Notification(user.nick, "part", channelname));
                         }
                         if (channelUsers(channelname) < 1) {
                             for (var i = 0; i < channels; i++) {
@@ -123,12 +120,12 @@ socket.on(
                                     channels.splice(channels[i]);
                                 }
                             }
-                            sendGlobalMessage(json.Channel("abandoned", channelname));
+                            sendGlobalMessage(json_events.Channel("abandoned", channelname));
                         }
                         break;
                     case 'quit':
                         users.splice(users.indexOf(user), 1);
-                        sendUserMessage(json.Notification(user.nick, "quit", ""));
+                        sendUserMessage(json_events.Notification(user.nick, "quit", ""));
                         break;
 					default:
 				}
