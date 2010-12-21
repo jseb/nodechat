@@ -1,4 +1,4 @@
-function Message(content, channel, nick) {
+exports.Message = function(content, channel, nick) {
 	return JSON.stringify(
 		{
             "event": "message",
@@ -10,7 +10,7 @@ function Message(content, channel, nick) {
 	);
 }
 
-function Nick(oldNick, newNick) {
+exports.Nick = function(oldNick, newNick) {
 	return JSON.stringify(
         {
             "event": "nick",
@@ -20,7 +20,7 @@ function Nick(oldNick, newNick) {
     );
 }
 
-function JoinPart(nick, type, channel) {
+exports.JoinPart = function(nick, type, channel) {
 	return JSON.stringify(
 		{
             "event": type,
@@ -31,7 +31,7 @@ function JoinPart(nick, type, channel) {
 	);
 }
 
-function QuitDisconnect(nick, type) {
+exports.QuitDisconnect = function(nick, type) {
 	return JSON.stringify(
 		{
             "event": type,
@@ -41,7 +41,7 @@ function QuitDisconnect(nick, type) {
 	);
 }
 
-function Channel(type, channel) {
+exports.Channel = function(type, channel) {
 	return JSON.stringify(
 		{
             "event": type, // created / abandoned

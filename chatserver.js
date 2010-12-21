@@ -1,5 +1,9 @@
 var io = require('/usr/local/lib/node/socket.io'),
-	http = require('http')
+	http = require('http'),
+    json = require('./json_events')
+
+console.log(json);
+var test = json.Nick("newnick", "oldnick");
 
 var users = [];
 var channels = [];
@@ -14,59 +18,6 @@ function Channel(name) {
 	this.name = name;
 	this.users = [];
 	this.messages = [];
-}
-
-function Message(content, channel, nick) {
-	return JSON.stringify(
-		{
-            "event": "message",
-			"channel": channel,
-			"nick": nick,
-			"content": content,
-			"ts": new Date()
-		}
-	);
-}
-
-function Nick(oldNick, newNick) {
-	return JSON.stringify(
-        {
-            "event": "nick",
-            "oldnick": oldNick,
-            "newnick": newNick
-        }
-    );
-}
-
-function JoinPart(nick, type, channel) {
-	return JSON.stringify(
-		{
-            "event": type,
-			"nick": nick,
-            "channel": channel,
-			"ts": new Date()
-		}
-	);
-}
-
-function QuitDisconnect(nick, type) {
-	return JSON.stringify(
-		{
-            "event": type,
-			"nick": nick,
-			"ts": new Date()
-		}
-	);
-}
-
-function Channel(type, channel) {
-	return JSON.stringify(
-		{
-            "event": type, // created / abandoned
-			"channel": channel,
-			"ts": new Date()
-		}
-	);
 }
 
 var server = http.createServer();
@@ -129,42 +80,42 @@ socket.on(
                     case 'join':
                         var channel = clientrequest.channel;
                         if (!channelExists(channel)) {
-                            channels.push(new Channel(channel));
+                            channels.push(json.Channel(channel));
                             user.channels.push(channel);
-                            sendGlobalMessage(new Channel("created", channel));
+                            sendGlobalMessage(json.Channel("created", channel));
                         }
-                        sendChannelMessage(channel, new JoinPart(user.nick, "join", channel));
+                        sendChannelMessage(channel, json.JoinPart(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
                     case 'list':
                         for (var i = 0; i < channels.length; i++) {
-                            client.send(new Channel("", channels[i].name));
+                            client.send(json.Channel("", channels[i].name));
                         }
                         break;
                     case 'msg':
                         var channel = clientrequest.channel;
                         var content = clientrequest.content;
-                        sendChannelMessage(channel, new Message(content, channel, user.nick));
+                        sendChannelMessage(channel, json.Message(content, channel, user.nick));
                         break;
                     case 'names':
                         var channel = clientrequest.channel;
                         var channelUsers = channels[channels.indexOf(channel)].users;
                         for (var i = 0; i < channelUsers.length; i++) {
-                           client.send(new Nick(channelUsers.nick, "")); 
+                           client.send(json.Nick(channelUsers.nick, "")); 
                         }
                         break;
                     case 'nick':
                         var requestedNick = clientrequest.requestedNick;
                         if (!nickExists(requestedNick)) {
                             user.nick = requestedNick; 
-                            sendUserMessage(new Nick(requestedNick, user.nick));
+                            sendUserMessage(json.Nick(requestedNick, user.nick));
                         }
                         break;
                     case 'part':
                         var channelname = clientrequest.channel;
                         if (channelExists(channelname)) {
                             user.channels.splice(user.channels.indexOf(channelname), 1);
-                            sendUserMessage(new Notification(user.nick, "part", channelname));
+                            sendUserMessage(json.Notification(user.nick, "part", channelname));
                         }
                         if (channelUsers(channelname) < 1) {
                             for (var i = 0; i < channels; i++) {
@@ -172,12 +123,12 @@ socket.on(
                                     channels.splice(channels[i]);
                                 }
                             }
-                            sendGlobalMessage(new Channel("abandoned", channelname));
+                            sendGlobalMessage(json.Channel("abandoned", channelname));
                         }
                         break;
                     case 'quit':
                         users.splice(users.indexOf(user), 1);
-                        sendUserMessage(new Notification(user.nick, "quit", ""));
+                        sendUserMessage(json.Notification(user.nick, "quit", ""));
                         break;
 					default:
 				}
