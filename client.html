@@ -1,15 +1,15 @@
 <html>
 <head>
 <title></title>
-<link rel=stylesheet type=text/css href="http://hklgd4j:8124/style">
-<script src="http://hklgd4j:8124/socket"></script>
-<script src="http://hklgd4j:8124/jquery.js"></script>
+<link rel=stylesheet type=text/css href="http://localhost/style.css">
+<script src="http://localhost/socket.io.js"></script>
+<script src="http://localhost/jquery.js"></script>
 <script>
     var username;
     var nameupdate; //Tmp Holder
     var channels = []; 
 
-    var socket = new io.Socket('hklgd4j'); 
+    var socket = new io.Socket('localhost', {'port':'8124'}); 
     socket.connect();
     socket.on(
         'message',
@@ -39,6 +39,7 @@
 		updateChannels();
 		return;
 	    }
+        }
 
 
 /*            var timestamp;
