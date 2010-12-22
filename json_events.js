@@ -1,3 +1,4 @@
+// -- EVENTS ------------------------------------------------------------------
 exports.Message = function(content, channel, nick) {
 	return JSON.stringify(
 		{
@@ -10,41 +11,30 @@ exports.Message = function(content, channel, nick) {
 	);
 }
 
-exports.Nick = function(oldNick, newNick) {
-	return JSON.stringify(
-        {
-            "event": "nick",
-            "oldnick": oldNick,
-            "newnick": newNick
-        }
-    );
-}
-
-exports.JoinPart = function(nick, type, channel) {
+exports.Disconnect = function(nick) {
 	return JSON.stringify(
 		{
-            "event": type,
-			"nick": nick,
-            "channel": channel,
-			"ts": new Date()
-		}
-	);
-}
-
-exports.QuitDisconnect = function(nick, type) {
-	return JSON.stringify(
-		{
-            "event": type,
+            "event": "disconnect",
 			"nick": nick,
 			"ts": new Date()
 		}
 	);
 }
 
-exports.Channel = function(type, channel) {
+exports.ChannelStarted = function(channel) {
 	return JSON.stringify(
 		{
-            "event": type, // created / abandoned
+            "event": "channelstarted",
+			"channel": channel,
+			"ts": new Date()
+		}
+	);
+}
+
+exports.ChannelAbandoned = function(channel) {
+	return JSON.stringify(
+		{
+            "event": "channelabandoned",
 			"channel": channel,
 			"ts": new Date()
 		}
