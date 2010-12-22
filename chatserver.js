@@ -105,7 +105,7 @@ socket.on(
                         var channelname = json.channel;
                         if (channelExists(channelname)) {
                             user.channels.splice(user.channels.indexOf(channelname), 1);
-                            sendUserMessage(json_commands.Part(user.nick, channelname));
+                            sendChannelMessage(json_commands.Part(user.nick, channelname));
                         }
                         if (channelUsers(channelname) < 1) {
                             for (var i = 0; i < channels; i++) {
