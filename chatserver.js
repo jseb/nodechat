@@ -82,23 +82,23 @@ socket.on(
                         if (!channelExists(channel)) {
                             channels.push(json_events.Channel(channel));
                             user.channels.push(channel);
-                            sendGlobalMessage(json_events.Channel("created", channel));
+                            // sendGlobalMessage(json_events.Channel("created", channel));
                         }
-                        sendChannelMessage(channel, json_events.JoinPart(user.nick, "join", channel));
+                        sendChannelMessage(channel, json_commands.Join(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
                     case 'nick':
                         var requestedNick = json.requestedNick;
                         if (!nickExists(requestedNick)) {
                             user.nick = requestedNick; 
-                            sendUserMessage(json_events.Nick(requestedNick, user.nick));
+                            sendUserMessage(json_commands.Nick(requestedNick, user.nick));
                         }
                         break;
                     case 'part':
                         var channelname = json.channel;
                         if (channelExists(channelname)) {
                             user.channels.splice(user.channels.indexOf(channelname), 1);
-                            sendUserMessage(json_events.Notification(user.nick, "part", channelname));
+                            sendUserMessage(json_commands.Part(user.nick, channelname));
                         }
                         if (channelUsers(channelname) < 1) {
                             for (var i = 0; i < channels; i++) {
@@ -106,12 +106,12 @@ socket.on(
                                     channels.splice(channels[i]);
                                 }
                             }
-                            sendGlobalMessage(json_events.Channel("abandoned", channelname));
+                            // sendGlobalMessage(json_events.Channel("abandoned", channelname));
                         }
                         break;
                     case 'quit':
                         users.splice(users.indexOf(user), 1);
-                        sendUserMessage(json_events.Notification(user.nick, "quit", ""));
+                        sendUserMessage(json_commands.Quit(user.nick));
                         break;
                 }
                 switch (json.event) {
