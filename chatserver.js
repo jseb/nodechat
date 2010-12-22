@@ -72,6 +72,7 @@ function channelExists(channelname) {
 socket.on(
     'connection',
     function(client) {
+        users.push(new User(client, ""));
         client.on(
             'message',
             function(data) {
