@@ -1,6 +1,7 @@
 var io = require('/usr/local/lib/node/socket.io'),
 	http = require('http'),
-    json_events = require('./json_events')
+    json_events = require('./json_events'),
+    json_commands = require('./json_commands')
 
 var users = [];
 var channels = [];
@@ -38,11 +39,13 @@ function sendUserMessage(user, message) {
     }
 }
 
+/*
 function sendGlobalMessage(message) {
     for (var i = 0; i < users.length; i++) {
         users[i].client.send(message);
     }
 }
+*/
 
 function nickExists(nick) {
 	for (var i = 0; i < users.length; i++) {
@@ -72,10 +75,10 @@ socket.on(
         client.on(
             'message',
             function(data) {
-				var clientrequest = eval('(' + data + ')');	            
-				switch (clientrequest.event) {
+                var json = JSON.parse(data);
+				switch (json.command) {
                     case 'join':
-                        var channel = clientrequest.channel;
+                        var channel = json.channel;
                         if (!channelExists(channel)) {
                             channels.push(json_events.Channel(channel));
                             user.channels.push(channel);
@@ -84,32 +87,15 @@ socket.on(
                         sendChannelMessage(channel, json_events.JoinPart(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
-                    case 'list':
-                        for (var i = 0; i < channels.length; i++) {
-                            client.send(json_events.Channel("", channels[i].name));
-                        }
-                        break;
-                    case 'msg':
-                        var channel = clientrequest.channel;
-                        var content = clientrequest.content;
-                        sendChannelMessage(channel, json_events.Message(content, channel, user.nick));
-                        break;
-                    case 'names':
-                        var channel = clientrequest.channel;
-                        var channelUsers = channels[channels.indexOf(channel)].users;
-                        for (var i = 0; i < channelUsers.length; i++) {
-                           client.send(json_events.Nick(channelUsers.nick, "")); 
-                        }
-                        break;
                     case 'nick':
-                        var requestedNick = clientrequest.requestedNick;
+                        var requestedNick = json.requestedNick;
                         if (!nickExists(requestedNick)) {
                             user.nick = requestedNick; 
                             sendUserMessage(json_events.Nick(requestedNick, user.nick));
                         }
                         break;
                     case 'part':
-                        var channelname = clientrequest.channel;
+                        var channelname = json.channel;
                         if (channelExists(channelname)) {
                             user.channels.splice(user.channels.indexOf(channelname), 1);
                             sendUserMessage(json_events.Notification(user.nick, "part", channelname));
@@ -127,15 +113,30 @@ socket.on(
                         users.splice(users.indexOf(user), 1);
                         sendUserMessage(json_events.Notification(user.nick, "quit", ""));
                         break;
-					default:
-				}
+                }
+                switch (json.event) {
+                    case 'message':
+                        var channel = json.channel;
+                        var content = json.content;
+                        sendChannelMessage(channel, json_events.Message(content, channel, user.nick));
+                        break;
+                    case 'disconnect':
+                        // TODO
+                        break;
+                    case 'channelstarted':
+                        // TODO
+                        break;
+                    case 'channelabandoned':
+                        // TODO
+                        break;
+                }
             }
         )
 
         client.on(
             'disconnect',
             function() {
-                // handleQuit();
+                // TODO
             }
         )
     }

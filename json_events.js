@@ -11,6 +11,7 @@ exports.Message = function(content, channel, nick) {
 	);
 }
 
+/*
 exports.Disconnect = function(nick) {
 	return JSON.stringify(
 		{
@@ -40,3 +41,4 @@ exports.ChannelAbandoned = function(channel) {
 		}
 	);
 }
+*/

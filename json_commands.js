@@ -40,3 +40,6 @@ exports.Quit = function(nick) {
 		}
 	);
 }
+
+// TODO: exports.Names = function()
+// TODO: exports.List = function()
