@@ -4,12 +4,15 @@
 <link rel=stylesheet type=text/css href="http://hklgd4j/style.css">
 <script src="http://hklgd4j/socket.io.js"></script>
 <script src="http://hklgd4j/jquery.js"></script>
+<script src="http://hklgd4j/json_commands.js"></script>
 <script>
     var username;
     var nameupdate; //Tmp Holder
     var channels = []; 
     var active_channel;
-    var socket = new io.Socket('hklgd4j'); 
+
+    var socket = new io.Socket('hklgd4j',{'port','8124'}); 
+
     socket.connect();
     socket.on(
         'message',
@@ -18,7 +21,7 @@
 	    if(!data) return; //Junkdata
 
 	    var event = data.event;
-	    if(!action) return;
+	    if(!event) return;
 
 	    if(event == "set_nick") {
 		if(!data.success) {
