@@ -92,7 +92,7 @@ socket.on(
                         var requestedNick = json.requestedNick;
                         if (!nickExists(requestedNick)) {
                             user.nick = requestedNick; 
-                            sendUserMessage(json_commands.Nick(requestedNick, user.nick));
+                            sendUserMessage(json_commands.Nick(user.nick, requestedNick));
                         }
                         break;
                     case 'part':
