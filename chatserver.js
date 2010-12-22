@@ -88,11 +88,17 @@ socket.on(
                         sendChannelMessage(channel, json_commands.Join(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
+                    /* TODO:
+                    case 'list':
+                        break;
+                    case 'names':
+                        break;
+                    */
                     case 'nick':
                         var requestedNick = json.requestedNick;
                         if (!nickExists(requestedNick)) {
-                            user.nick = requestedNick; 
                             sendUserMessage(json_commands.Nick(user.nick, requestedNick));
+                            user.nick = requestedNick; 
                         }
                         break;
                     case 'part':
