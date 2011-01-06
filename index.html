@@ -1,26 +1,38 @@
 <html>
 <head>
 <title></title>
-<link rel=stylesheet type=text/css href="http://hklgd4j/style.css">
-<script src="http://hklgd4j/socket.io.js"></script>
-<script src="http://hklgd4j/jquery.js"></script>
-<script src="http://hklgd4j/json_commands.js"></script>
+<link rel=stylesheet type=text/css href="/style.css">
+<script src="/lib/socket.io.js"></script>
+<script src="/lib/jquery.js"></script>
+<script src="/json_commands.js"></script>
+<script src="/json_events.js"></script>
 <script>
     var username;
     var nameupdate; //Tmp Holder
     var channels = []; 
     var active_channel;
 
-    var socket = new io.Socket('hklgd4j',{'port','8124'}); 
-
-    socket.connect();
+    var socket = new io.Socket({'port','8124'}); 
+    socket.on(	'connection',
+		function() {
+			$('#nickselection').show();
+		}
+	     )
+			   
     socket.on(
         'message',
         function(data) {
+	    if(data.length == 0) { return;}
+
 	    var data = eval('('+data+')');	            
 	    if(!data) return; //Junkdata
+		
+	    if(data.command) {
+		processCommand(data);
+		return;
+	    }
 
-	    var event = data.event;
+/*
 	    if(!event) return;
 
 	    if(event == "set_nick") {
@@ -29,6 +41,8 @@
 			return;
 		}
 		username = nameupdate;
+		$('#nickselection').hide();
+		$('#channelselection').show();
 		return;
 	    }
 
@@ -75,7 +89,7 @@
 	    }
 
 	     
-	/*   
+	   
 	   
 	    if(info.type == "sys") {
 		 document.getElementById('output').innerHTML += "<span class=\"timestamp\">"+timestamp+"</span><span class=\"system_msg\"> ---> " + info.message + "</span><br />";
@@ -85,7 +99,11 @@
 	    }*/
         }
     )
-    
+	
+    function processCommand(data) {
+	var command = data.command;
+    }
+     
     function fixTime(time) {
 	if(time < 10) return "0"+time; return time;
     }
@@ -166,10 +184,9 @@
 		var nick = $('#login_username').val();
 		if(!(nick.trim())) {
 			displayError("Skriv in ett nick!");
+			return;
 		}
-		var cmd = JSON.stringify({"event":"join_server","nick":nick});	
-		socket.send(cmd);
-		nameupdate = nick;
+		socket.send(Nick('',nick));
 	}
 
 	function displayError(error) {
@@ -178,19 +195,21 @@
 	}
 
 $(document).ready(function() {
+	socket.connect();
+
 	$("#active_channels li").click(function(){
 		openChannelWindow($(this).text());
 	});
 });
 
 </script> 
-    </head>
+</head>
 
 
     <body>
 	<div id="container">
 			<div id="errorframe"></div>
-			<div id="nickselection">
+			<div id="nickselection" style="display:none;">
 				<label for="login_username" id="login_text">Nick:</label>
 				<input type="text" value="" id="login_username" />
 				<input type="button" value="Login" onclick="login();" />
@@ -198,7 +217,7 @@ $(document).ready(function() {
 			<div id="channelselection">
 				<div id="channellist" style="display:none;">
 				</div>
-				<div id="channelcreate">
+				<div id="channelcreate" style="display:none;">
 		                        <label for="create_chan" id="create_chan_text">Create channel:</label>
 	        	                <input type="text" value="" id="create_channel" />
 	                                <input type="button" value="Join" onclick="joinChannel($('#create_channel'));" />	

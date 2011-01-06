@@ -6,7 +6,15 @@ var http = require('http'),
 var server = http.createServer(
     function(request, response) {
 		var uri = url.parse(request.url).pathname;
+		
+		if(uri == "/") {
+			uri = "/index.html";
+		}
+
 		var filename = path.join(process.cwd(), uri);
+		if(filename == "/") {
+			filename = "/index.html";
+		}
 		fs.readFile(
 			filename,
 			function(error, data) {
@@ -48,5 +56,5 @@ var server = http.createServer(
 		);
     }
 );
-server.listen(80);
+server.listen(1200);
 console.log("fileserver accepting connections on port 80");

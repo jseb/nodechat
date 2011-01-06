@@ -13,9 +13,9 @@ exports.Join = function(nick, channel) {
 	return JSON.stringify(
 		{
             "command": "join",
-			"nick": nick,
+            "nick": nick,
             "channel": channel,
-			"ts": new Date()
+            "ts": new Date()
 		}
 	);
 }
