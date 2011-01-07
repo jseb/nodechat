@@ -99,6 +99,8 @@ socket.on(
                         if (!nickExists(requestedNick)) {
                             sendUserMessage(json_commands.Nick(user.nick, requestedNick));
                             user.nick = requestedNick; 
+                        } else {
+                            sendUserMessage(json_commands.Nick("", ""));
                         }
                         break;
                     case 'part':
