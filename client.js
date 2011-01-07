@@ -3,80 +3,23 @@ var nameupdate; //Tmp Holder
 var channels = []; 
 var active_channel;
 
-var socket = new io.Socket({'port','8124'}); 
+var socket = new io.Socket('',{'port':'8124'}); 
 
-socket.connect();
+socket.on(
+	'connect',
+	function(data) {
+		alert("herpderp");
+		
+	})
+
 socket.on(
     'message',
     function(data) {
     var data = eval('('+data+')');	            
     if(!data) return; //Junkdata
 
-    var event = data.event;
-    if(!event) return;
+})
 
-    if(event == "set_nick") {
-    if(!data.success) {
-        displayError("Nicket upptaget, vänligen välj ett annat");
-        return;
-    }
-    username = nameupdate;
-    return;
-    }
-
-    if(event == "channels") {
-    if(data.type == "add") {
-        channels.push(data.channel);
-    }
-    else if(data.type == "remove") {
-        channels.splice(channels.indexOf(data.channel),1);
-    }
-    updateChannels();
-    return;
-    }
-    
-    if(event == "sysmsg") {
-    return;	
-    }
-
-    if(event == "msg") {
-         var timestamp;
-     if(info.ts) {
-         d = new Date(info.ts);	
-         timestamp = fixTime(d.getHours())+":"+fixTime(d.getMinutes())+":"+fixTime(d.getSeconds());
-     }
-     else {
-        timestamp = new Date();
-        timestamp = fixTime(timestamp.getHours)+":"+fixTime(timestamp.getMinutes())+":"+fixTime(timestamp.getSeconds());
-     }
-     
-     timestamp = "<span class=\"timestamp\">"+timestamp+"</span>";
-
-     var msg = info.msg;
-
-     var user =  "<span class=\"username";
-     if(msg.indexOf(username) > -1) {
-        user += " highlight";
-     }
-         user += "\">"+info.user+"</span>";
-    
-     msg = "<span class=\"user_message\">"+msg+"</span><br />\n";
-
-    $('"#"+info.channel).append(timestamp+user+msg);
-    return;
-    }
-
-     
-/*   
-   
-    if(info.type == "sys") {
-     document.getElementById('output').innerHTML += "<span class=\"timestamp\">"+timestamp+"</span><span class=\"system_msg\"> ---> " + info.message + "</span><br />";
-    }
-    else if(info.type == "usr") {
-     document.getElementById('output').innerHTML += "<span class=\"timestamp\">"+timestamp+"</span><span class=\"username\">"+ info.user +"</span><span class=\"user_message\">"+ info.message +"</span><br />";
-    }*/
-    }
-)
 
 function fixTime(time) {
 if(time < 10) return "0"+time; return time;
@@ -168,3 +111,8 @@ function displayError(error) {
     if(!error) return;
     $('#errorframe').hide().text(error).show();
 }
+
+$(document).ready(function(){
+	alert("x");
+	socket.connect();
+});

@@ -1,4 +1,4 @@
-var io = require('./lib/socket.io'),
+var io = require('./server_lib/socket.io'),
 	http = require('http'),
     json_events = require('./json_events'),
     json_commands = require('./json_commands')

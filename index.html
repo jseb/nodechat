@@ -5,7 +5,7 @@
 <script type="text/javascript">
 var exports;
 </script>
-<script src="/lib/socket.io/lib/socket.io/client.js"></script>
+<script src="/lib/socket.io.js"></script>
 <script src="/lib/jquery.js"></script>
 <script src="/json_commands.js"></script>
 <script src="/json_events.js"></script>
@@ -13,8 +13,8 @@ var exports;
 </head>
 	<body>
 	<div id="container">
-			<div id="infoframe"></div>
-			<div id="errorframe"></div>
+			<div style="display:none;" id="infoframe"></div>
+			<div style="display:none;" id="errorframe"></div>
 			<div id="nickselection" style="display:none;">
 				<label for="login_username" id="login_text">Nick:</label>
 				<input type="text" value="" id="login_username" />
@@ -32,14 +32,14 @@ var exports;
 			</div>
 	        <div id="page">
 		    <div id="active_channels_container">
-			<ul id="active_channels">
-			</ul>
+				<ul id="active_channels">
+				</ul>
 		    </div>
-        	    <div id="output">
+        	<div style="display:none;" id="output">
 		    </div>
-	            <div id="input_field">
-        	        <input id="input" type="text" onkeydown="if (event.keyCode == 13) sendData();">
-	            </div>
+	        <div style="display:none;" id="input_field">
+        	    <input id="input" type="text" onkeydown="if (event.keyCode == 13) sendData();">
+	        </div>
 	        </div>
 	</div>
     </body>
