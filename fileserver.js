@@ -42,7 +42,7 @@ var server = http.createServer(
 						contenttype = 'text/css';
 						break;
 					case '.js':
-						contenttpe = 'text/javascript';
+						contenttype = 'text/javascript';
 						break;
 				}
 
