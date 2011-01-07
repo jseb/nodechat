@@ -100,7 +100,7 @@ socket.on(
                             sendUserMessage(json_commands.Nick(user.nick, requestedNick));
                             user.nick = requestedNick; 
                         } else {
-                            sendUserMessage(json_commands.Nick("", ""));
+                            sendUserMessage(json_commands.Nick(user.nick, user.nick));
                         }
                         break;
                     case 'part':
