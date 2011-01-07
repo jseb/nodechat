@@ -1,4 +1,5 @@
 <html>
+<<<<<<< HEAD
 <head>
 <title></title>
 <link rel=stylesheet type=text/css href="/style.css">
@@ -236,5 +237,51 @@ $(document).ready(function() {
 	            </div>
 	        </div>
 	</div>
+=======
+    <script src="http://localhost/lib/socket.io.js"></script>
+    <script src="http://localhost/lib/jquery.js"></script>
+    <script src="http://localhost/json_commands.js"></script>
+    <script src="http://localhost/client.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#active_channels li").click(function(){
+                openChannelWindow($(this).text());
+            });
+        });
+    </script> 
+    <head>
+        <title></title>
+        <link rel=stylesheet type=text/css href="http://localhost/style.css">
+    </head>
+    <body>
+        <div id="container">
+            <div id="errorframe"></div>
+            <div id="nickselection">
+                <label for="login_username" id="login_text">Nick:</label>
+                <input type="text" value="" id="login_username" />
+                <input type="button" value="Login" onclick="login();" />
+            </div>
+            <div id="channelselection">
+                <div id="channellist" style="display:none;">
+                </div>
+                <div id="channelcreate">
+                    <label for="create_chan" id="create_chan_text">Create channel:</label>
+                    <input type="text" value="" id="create_channel" />
+                    <input type="button" value="Join" onclick="joinChannel($('#create_channel'));" />	
+                </div>
+            </div>
+            <div id="page">
+                <div id="active_channels_container">
+                    <ul id="active_channels">
+                    </ul>
+                </div>
+                <div id="output">
+                </div>
+                <div id="input_field">
+                    <input id="input" type="text" onkeydown="if (event.keyCode == 13) sendData();">
+                </div>
+            </div>
+        </div>
+>>>>>>> 42f3ddea35bd016712af3bfcd7ae87a44937555f
     </body>
 </html>
