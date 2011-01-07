@@ -41,6 +41,9 @@ var server = http.createServer(
 					case '.css':
 						contenttype = 'text/css';
 						break;
+					case '.js':
+						contenttpe = 'text/javascript';
+						break;
 				}
 
 				response.writeHead(

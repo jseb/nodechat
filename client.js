@@ -3,7 +3,7 @@ var nameupdate; //Tmp Holder
 var channels = []; 
 var active_channel;
 
-var socket = new io.Socket('localhost',{'port','8124'}); 
+var socket = new io.Socket({'port','8124'}); 
 
 socket.connect();
 socket.on(

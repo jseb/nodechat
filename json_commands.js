@@ -1,4 +1,6 @@
 // -- COMMANDS ----------------------------------------------------------------
+(function(exports){
+
 exports.Nick = function(oldNick, newNick) {
 	return JSON.stringify(
         {
@@ -43,3 +45,8 @@ exports.Quit = function(nick) {
 
 // TODO: exports.Names = function()
 // TODO: exports.List = function()
+
+
+
+})(typeof exports === 'undefined'? this['json_commands']={}: exports);
+

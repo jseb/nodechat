@@ -1,4 +1,5 @@
 // -- EVENTS ------------------------------------------------------------------
+(function(exports){
 exports.Message = function(content, channel, nick) {
 	return JSON.stringify(
 		{
@@ -42,3 +43,4 @@ exports.ChannelAbandoned = function(channel) {
 	);
 }
 */
+})(typeof exports === 'undefined'? this['json_events']={}: exports);
