@@ -57,4 +57,4 @@ var server = http.createServer(
     }
 );
 server.listen(1200);
-console.log("fileserver accepting connections on port 80");
+console.log("fileserver accepting connections on port 1200");
