@@ -11,13 +11,11 @@ exports.Nick = function(oldNick, newNick) {
     );
 }
 
-exports.Join = function(nick, channel) {
+exports.Join = function(channel) {
 	return JSON.stringify(
 		{
             "command": "join",
-            "nick": nick,
-            "channel": channel,
-            "ts": new Date()
+            "channel": channel
 		}
 	);
 }

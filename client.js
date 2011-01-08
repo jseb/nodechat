@@ -1,5 +1,4 @@
 var username;
-var nameupdate; //Tmp Holder
 var channels = []; 
 var active_channel;
 
@@ -8,17 +7,50 @@ var socket = new io.Socket(null,{'port':'8124'});
 socket.on(
 	'connect',
 	function(data) {
-		alert("herpderp");
-		
+		displayInfo("Welcome! Please enter your username!");
+		$('#nickselection').show();
 	})
+
+
 
 socket.on(
     'message',
     function(data) {
     var data = eval('('+data+')');	            
     if(!data) return; //Junkdata
+	console.log(data);
+	if(data.command) {
+		console.log("Command recived");
+		handleCommand(data);
+		return;
+	}
 
 })
+
+function handleCommand(jsonData) {
+	switch(jsonData.command) {
+		case 'nick':
+			if(!jsonData.oldnick) { //Inget oldnick, det här är ett försök till en inloggning
+				if(jsonData.newnick) {
+					username = jsonData.newnick;
+					displayInfo("Welcome "+username+"!");
+					$('#nickselection').hide();
+					$('#channelcreate').show();
+				}
+				else {
+					displayError("Username occupied, please choose another one!");
+				}
+				$('#login_username').val("")
+				break;
+			}
+		case 'join':
+			
+    		createChannelWindow(channel);
+			openChannelWindow(channel);
+
+			break;
+	}
+}
 
 
 function fixTime(time) {
@@ -68,10 +100,7 @@ function updateChannels() {
 
 function joinChannel(channel) {
     if(!channel) return;
-    var cmd = JSON.stringify({"action":"join","channel":channel});
-    socket.send(cmd);
-    createChannelWindow(channel);
-    openChannelWindow(channel);
+    socket.send(json_commands.Join(channel));
 }
 
 function createChannelWindow(channel_name) {
@@ -99,20 +128,26 @@ function openChannelWindow(channel_name) {
 
 function login() {
     var nick = $('#login_username').val();
+	console.log("Trying to login with nick: "+nick);
     if(!(nick.trim())) {
         displayError("Skriv in ett nick!");
     }
-    var cmd = JSON.stringify({"event":"join_server","nick":nick});	
-    socket.send(cmd);
-    nameupdate = nick;
+	console.log(json_commands.Nick("",nick));
+    socket.send(json_commands.Nick("",nick));
 }
 
+function displayInfo(info) {
+	if(!info) return;
+    $('#errorframe').hide();
+    $('#infoframe').hide().text(info).show();
+
+}
 function displayError(error) {
     if(!error) return;
+	$('#infoframe').hide();
     $('#errorframe').hide().text(error).show();
 }
 
 $(document).ready(function(){
-	alert("x");
 	socket.connect();
 });
