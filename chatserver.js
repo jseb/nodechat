@@ -23,20 +23,24 @@ server.listen(8124);
 console.log("--> created http server on port 8124, attaching socket.io");
 var socket = io.listen(server); 
 
-function sendChannelMessage(channel, message) {
-	for (var i = 0; i < channel.users.length; i++) {
-		channel.users[i].client.send(message);
-	}
-	channel.messages.add(message);
-	if (channel.messages.length > 500) {
-		channel.messages.pop();
-	}
+function sendChannelMessage(channelName, message) {
+    for (var ch = 0; ch < channels.length; ch++) {
+        if (channels[ch].name == channelName) {
+            for (var i = 0; i < channel.users.length; i++) {
+                channel.users[i].client.send(message);
+            }
+            channel.messages.add(message);
+            if (channel.messages.length > 500) {
+                channel.messages.pop();
+            }
+        }
+    }
 }
 
 function sendUserMessage(user, message) {
     if (user.channels) {
         for (var i = 0; i < user.channels.length; i++) {
-            sendChannelMessage(user.channels[i], message); 
+            sendChannelMessage(user.channels[i].name, message); 
         }
     }
 }
@@ -58,7 +62,7 @@ function nickExists(nick) {
 	return false;
 }
 
-function channelUsers(channelname) {
+function channelUsers(channelName) {
     for (var i = 0; i < channels.length; i++) {
         if (channels[i].name == channel) {
             return channels[i].users.length;
@@ -67,8 +71,8 @@ function channelUsers(channelname) {
     return 0;
 }
 
-function channelExists(channelname) {
-    return channelUsers(channelname) > 0;
+function channelExists(channelName) {
+    return channelUsers(channelName) > 0;
 }
 
 socket.on(
@@ -82,13 +86,13 @@ socket.on(
                 var json = JSON.parse(data);
 				switch (json.command) {
                     case 'join':
-                        var channel = json.channel;
-                        if (!channelExists(channel)) {
-                            channels.push(json_events.Channel(channel));
-                            user.channels.push(channel);
-                            // sendGlobalMessage(json_events.Channel("created", channel));
+                        var channelName = json.channel;
+                        if (!channelExists(channelName)) {
+                            var channel = new Channel(channelName);
+                            channels.push(channel);
                         }
-                        sendChannelMessage(channel, json_commands.Join(user.nick, "join", channel));
+                        user.channels.push(channelName);
+                        sendChannelMessage(channelName, json_commands.Join(user.nick, "join", channel));
                         // TODO: send buffer to client
                         break;
                     /* TODO:
@@ -109,18 +113,18 @@ socket.on(
                         }
                         break;
                     case 'part':
-                        var channelname = json.channel;
-                        if (channelExists(channelname)) {
-                            user.channels.splice(user.channels.indexOf(channelname), 1);
-                            sendChannelMessage(json_commands.Part(user.nick, channelname));
+                        var channelName = json.channel;
+                        if (channelExists(channelName)) {
+                            user.channels.splice(user.channels.indexOf(channelName), 1);
+                            sendChannelMessage(channelName, json_commands.Part(user.nick, channelName));
                         }
-                        if (channelUsers(channelname) < 1) {
+                        if (channelUsers(channelName) < 1) {
                             for (var i = 0; i < channels; i++) {
-                                if (channels[i].name == channelname) {
+                                if (channels[i].name == channelName) {
                                     channels.splice(channels[i]);
                                 }
                             }
-                            // sendGlobalMessage(json_events.Channel("abandoned", channelname));
+                            // sendGlobalMessage(json_events.Channel("abandoned", channelName));
                         }
                         break;
                     case 'quit':
@@ -130,9 +134,9 @@ socket.on(
                 }
                 switch (json.event) {
                     case 'message':
-                        var channel = json.channel;
+                        var channelName = json.channel;
                         var content = json.content;
-                        sendChannelMessage(channel, json_events.Message(content, channel, user.nick));
+                        sendChannelMessage(channelName, json_events.Message(content, channel, user.nick));
                         break;
                     case 'disconnect':
                         // TODO
