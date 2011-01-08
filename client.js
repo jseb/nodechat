@@ -20,9 +20,14 @@ socket.on(
     if(!data) return; //Junkdata
 	console.log(data);
 	if(data.command) {
-		console.log("Command recived");
+		console.log("Command received");
 		handleCommand(data);
 		return;
+	}
+	if(data.event) {
+		console.log("Event received");
+		handleEvent(data);
+		retur;
 	}
 
 })
@@ -43,11 +48,28 @@ function handleCommand(jsonData) {
 				$('#login_username').val("")
 				break;
 			}
+			else if(jsonData.oldnick == jsonData.newnick) { //Gick inte att byta
+				displayError("Username already taken");
+				break;
+			}
+			username = jsonData.newnick;
+			break;
+		case 'join':
+			var channel = jsonData.channel;
+			if(!channel) {
+				displayError("An error occoured while trying to join or create a channel");
+				break;
+			}
+    		createChannelWindow(channel);
+			openChannelWindow(channel);			
+			break;
+	}
+}
+
+function handleEvent(jsonData) {
+	switch(jsonData.event) {
 		case 'join':
 			
-    		createChannelWindow(channel);
-			openChannelWindow(channel);
-
 			break;
 	}
 }
@@ -100,12 +122,14 @@ function updateChannels() {
 
 function joinChannel(channel) {
     if(!channel) return;
+	console.log(json_commands.Join(channel));
     socket.send(json_commands.Join(channel));
 }
 
 function createChannelWindow(channel_name) {
     $("#active_channels").append("<li>"+channel_name+"</li>");
     $("#output").append("<div class=\"channel_window\" id=\""+channel_name+"\"></div>");
+	channels.push(channel_name);
 }
 
 function destroyChannelWindow(channel_name) {
@@ -113,6 +137,8 @@ function destroyChannelWindow(channel_name) {
 }
 
 function openChannelWindow(channel_name) {
+	$("#output").show();
+	$("#input_field").show();
     $("#output").each(function(){
         $(this).hide();
     });
