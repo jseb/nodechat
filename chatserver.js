@@ -34,8 +34,10 @@ function sendChannelMessage(channel, message) {
 }
 
 function sendUserMessage(user, message) {
-    for (var i = 0; i < user.channels.length; i++) {
-        sendChannelMessage(user.channels[i], message); 
+    if (user.channels) {
+        for (var i = 0; i < user.channels.length; i++) {
+            sendChannelMessage(user.channels[i], message); 
+        }
     }
 }
 
@@ -72,7 +74,8 @@ function channelExists(channelname) {
 socket.on(
     'connection',
     function(client) {
-        users.push(new User(client, ""));
+        var user = new User(client, "");
+        users.push(user);
         client.on(
             'message',
             function(data) {
